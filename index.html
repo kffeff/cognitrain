@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة التدريب المعرفي</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080b14;
+    --surface: #0d1220;
+    --surface2: #121929;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --text: #e2e8f0;
+    --text-dim: #64748b;
+    --text-muted: #334155;
+    --glow: 0 0 30px rgba(0,212,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 20%, rgba(0,212,255,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 80%, rgba(124,58,237,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== APP WRAPPER ===== */
+  #app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,11,20,0.8);
+    backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .nav-pills {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .nav-pill {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-pill.active {
+    background: var(--accent);
+    color: #000;
+    font-weight: 700;
+  }
+
+  .user-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .points-badge {
+    color: var(--warning);
+    font-weight: 700;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; padding: 32px; max-width: 900px; margin: 0 auto; width: 100%; }
+  .screen.active { display: block; }
+
+  /* ===== HOME SCREEN ===== */
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+  }
+
+  .hero-label {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 20px;
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #fff 40%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero p {
+    color: var(--text-dim);
+    font-size: 16px;
+    max-width: 500px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .skill-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: right;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--card-color, var(--accent));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .skill-card:hover {
+    border-color: var(--card-color, var(--accent));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+
+  .skill-card:hover::before { opacity: 1; }
+
+  .skill-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+
+  .skill-name {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .skill-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .skill-level-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+
+  .skill-level-fill {
+    height: 100%;
+    background: var(--card-color, var(--accent));
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    padding: 12px 28px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Cairo', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 0 20px rgba(0,212,255,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 30px rgba(0,212,255,0.5);
+  }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-danger {
+    background: rgba(239,68,68,0.15);
+    color: var(--danger);
+    border: 1px solid rgba(239,68,68,0.3);
+  }
+
+  .btn-lg { padding: 16px 40px; font-size: 17px; border-radius: 12px; }
+
+  /* ===== EXERCISE SCREEN ===== */
+  .exercise-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+  }
+
+  .exercise-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .level-badge {
+    padding: 4px 12px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .progress-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+
+  .dot.done { background: var(--accent3); }
+  .dot.current { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+  /* ===== EXERCISE CARD ===== */
+  .exercise-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .exercise-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.3;
+  }
+
+  /* Digit Span */
+  .digit-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 100px;
+    font-weight: 700;
+    color: var(--accent);
+    text-shadow: 0 0 40px rgba(0,212,255,0.5);
+    line-height: 1;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .digit-display.flash {
+    transform: scale(1.1);
+    color: #fff;
+  }
+
+  .digit-input {
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    color: var(--text);
+    text-align: center;
+    width: 100%;
+    max-width: 300px;
+    letter-spacing: 8px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .digit-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,255,0.1); }
+
+  /* Stroop */
+  .stroop-word {
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 40px;
+    transition: all 0.2s;
+    text-shadow: 0 0 30px currentColor;
+  }
+
+  .color-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .color-btn {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 11px;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .color-btn:hover { transform: scale(1.1); border-color: rgba(255,255,255,0.5); }
+  .color-btn:active { transform: scale(0.95); }
+
+  /* Go/No-Go */
+  .go-target {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    transition: all 0.2s;
+    cursor: pointer;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .go-target.go {
+    background: rgba(16,185,129,0.15);
+    border: 3px solid var(--accent3);
+    box-shadow: 0 0 40px rgba(16,185,129,0.3);
+  }
+
+  .go-target.nogo {
+    background: rgba(239,68,68,0.1);
+    border: 3px solid var(--danger);
+    box-shadow: 0 0 40px rgba(239,68,68,0.2);
+  }
+
+  .go-target.waiting {
+    background: var(--surface2);
+    border: 3px solid var(--border);
+  }
+
+  /* Timer bar */
+  .timer-bar-wrap {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 24px;
+    overflow: hidden;
+  }
+
+  .timer-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width linear;
+  }
+
+  /* Feedback */
+  .feedback-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    border-radius: 20px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .feedback-overlay.show { opacity: 1; }
+  .feedback-overlay.correct { background: rgba(16,185,129,0.15); }
+  .feedback-overlay.wrong { background: rgba(239,68,68,0.1); }
+
+  /* ===== STATS ROW ===== */
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+
+  .stat-chip {
+    flex: 1;
+    min-width: 120px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-chip .val {
+    font-size: 24px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+  }
+
+  .stat-chip .lbl {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  /* ===== DASHBOARD ===== */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  @media(max-width: 600px) { .dash-grid { grid-template-columns: 1fr; } }
+
+  .dash-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  .dash-card.full { grid-column: 1 / -1; }
+
+  .dash-card h3 {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Bar chart */
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 100px;
+    padding-top: 12px;
+  }
+
+  .bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+  }
+
+  .bar {
+    width: 100%;
+    background: linear-gradient(to top, var(--accent2), var(--accent));
+    border-radius: 4px 4px 0 0;
+    transition: height 1s ease;
+    min-height: 4px;
+  }
+
+  .bar-lbl {
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  /* Skill radar */
+  .skill-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .skill-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .skill-row-name {
+    font-size: 12px;
+    color: var(--text-dim);
+    width: 110px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .skill-row-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .skill-row-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1.2s ease;
+  }
+
+  .skill-row-pct {
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim);
+    width: 36px;
+    text-align: left;
+  }
+
+  /* ===== PHASE LABELS ===== */
+  .phase-label {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+
+  .instruction-text {
+    font-size: 16px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    max-width: 400px;
+    margin-bottom: 32px;
+  }
+
+  /* ===== SCORE COMPLETE ===== */
+  .score-display {
+    font-size: 72px;
+    font-weight: 900;
+    font-family: 'JetBrains Mono', monospace;
+    background: linear-gradient(135deg, var(--accent3), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 16px 0;
+  }
+
+  /* ===== SESSION PICKER ===== */
+  .session-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .session-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .session-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,212,255,0.1);
+  }
+
+  .session-card .icon { font-size: 40px; margin-bottom: 12px; }
+  .session-card .name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .session-card .info { font-size: 12px; color: var(--text-dim); }
+
+  /* Misc */
+  .gap-12 { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+  .text-dim { color: var(--text-dim); font-size: 14px; }
+  .text-center { text-align: center; }
+  .text-accent { color: var(--accent); }
+  .text-success { color: var(--accent3); }
+  .text-danger { color: var(--danger); }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(0,212,255,0.3); }
+    50% { box-shadow: 0 0 40px rgba(0,212,255,0.6); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .anim-in { animation: fadeIn 0.4s ease; }
+
+  .countdown-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 3px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 auto 24px;
+    animation: pulse-glow 1s ease infinite;
+  }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">🧠</div>
+      CogniTrain
+    </div>
+    <nav class="nav-pills">
+      <button class="nav-pill active" onclick="showScreen('home')">الرئيسية</button>
+      <button class="nav-pill" onclick="showScreen('train')">التدريب</button>
+      <button class="nav-pill" onclick="showScreen('dashboard')">الأداء</button>
+    </nav>
+    <div class="user-badge">
+      <span>⚡</span>
+      <span class="points-badge" id="header-points">0</span>
+      <span>نقطة</span>
+    </div>
+  </header>
+
+  <!-- ===== HOME ===== -->
+  <div id="screen-home" class="screen active">
+    <div class="hero anim-in">
+      <div class="hero-label">منصة علمية متخصصة</div>
+      <h1>طوّر قدراتك<br>المعرفية</h1>
+      <p>تدريب علمي مدروس لتحسين الذاكرة، الانتباه، وسرعة المعالجة — مع قياس دقيق للتقدم</p>
+      <button class="btn btn-primary btn-lg" onclick="showScreen('train')">ابدأ جلسة تدريب ←</button>
+    </div>
+
+    <div class="skills-grid anim-in">
+      <div class="skill-card" style="--card-color:#00d4ff">
+        <div class="skill-icon">🧮</div>
+        <div class="skill-name">الذاكرة العاملة</div>
+        <div class="skill-desc">حفظ واسترجاع تسلسلات بترتيب دقيق</div>
+        <div class="skill-level-bar"><div class="skill-level-fill" style="width:65%"></div></div>
+      </div>
+      <div class="skill-card" style="--card-color:#7c3aed">
+        <div class="skill-icon">🎯</div>
+        <div class="skill-name">التحكم التنفيذي</div>
+        <div class="skill-desc">كبح الاستجابة التلقائية واتخاذ قرارات سريعة</div>
+        <div class="skill-level-bar"><div class="skill-level-fill" style="width:45%"></div></div>
+      </div>
+      <div class="skill-card" style="--card-color:#10b981">
+        <div class="skill-icon">⚡</div>
+        <div class="skill-name">سرعة المعالجة</div>
+        <div class="skill-desc">تحديد المحفزات والاستجابة بأسرع وقت</div>
+        <div class="skill-level-bar"><div class="skill-level-fill" style="width:55%"></div></div>
+      </div>
+      <div class="skill-card" style="--card-color:#f59e0b">
+        <div class="skill-icon">🔀</div>
+        <div class="skill-name">المرونة الإدراكية</div>
+        <div class="skill-desc">التبديل السريع بين القواعد والمهام</div>
+        <div class="skill-level-bar"><div class="skill-level-fill" style="width:35%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TRAINING MENU ===== -->
+  <div id="screen-train" class="screen">
+    <div class="anim-in">
+      <div class="section-title">اختر تمريناً</div>
+      <p class="text-dim">كل تمرين يستهدف مهارة معرفية محددة ويتكيف مع مستواك</p>
+
+      <div class="session-grid mt-24">
+        <div class="session-card" onclick="startExercise('digit')">
+          <div class="icon">🧮</div>
+          <div class="name">Digit Span</div>
+          <div class="info">الذاكرة العاملة · 5 دقائق</div>
+        </div>
+        <div class="session-card" onclick="startExercise('stroop')">
+          <div class="icon">🎨</div>
+          <div class="name">Stroop</div>
+          <div class="info">التحكم التنفيذي · 4 دقائق</div>
+        </div>
+        <div class="session-card" onclick="startExercise('gonogo')">
+          <div class="icon">🚦</div>
+          <div class="name">Go / No-Go</div>
+          <div class="info">الكبح والانتباه · 3 دقائق</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EXERCISE RUNNER ===== -->
+  <div id="screen-exercise" class="screen">
+    <div class="exercise-header">
+      <button class="btn btn-secondary" onclick="showScreen('train')">← رجوع</button>
+      <div class="exercise-meta">
+        <span id="ex-level-badge" class="level-badge">المستوى 1</span>
+        <div class="progress-dots" id="ex-dots"></div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-chip">
+        <div class="val" id="stat-accuracy">—</div>
+        <div class="lbl">الدقة %</div>
+      </div>
+      <div class="stat-chip">
+        <div class="val" id="stat-time">—</div>
+        <div class="lbl">زمن الاستجابة ms</div>
+      </div>
+      <div class="stat-chip">
+        <div class="val" id="stat-streak">0</div>
+        <div class="lbl">متتالية</div>
+      </div>
+    </div>
+
+    <div class="exercise-card" id="exercise-area">
+      <div class="feedback-overlay" id="feedback-overlay"></div>
+      <div id="exercise-content"></div>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="screen-dashboard" class="screen">
+    <div class="anim-in">
+      <div class="section-title">لوحة الأداء</div>
+      <p class="text-dim">تتبع تقدمك عبر الزمن واكتشف نقاط قوتك وضعفك</p>
+
+      <div class="dash-grid mt-24">
+        <div class="dash-card">
+          <h3>📊 دقة الأداء (آخر 7 جلسات)</h3>
+          <div class="bar-chart" id="accuracy-chart"></div>
+        </div>
+        <div class="dash-card">
+          <h3>⚡ زمن الاستجابة (ms)</h3>
+          <div class="bar-chart" id="time-chart"></div>
+        </div>
+        <div class="dash-card full">
+          <h3>🧠 مستوى المهارات</h3>
+          <div class="skill-bars" id="skill-bars"></div>
+        </div>
+        <div class="dash-card">
+          <h3>🏆 الإحصائيات الكلية</h3>
+          <div id="global-stats"></div>
+        </div>
+        <div class="dash-card">
+          <h3>💡 التوصيات</h3>
+          <div id="recommendations"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end #app -->
+
+<script>
+// ========================================================
+// STATE
+// ========================================================
+const state = {
+  points: 0,
+  currentExercise: null,
+  level: 1,
+  streak: 0,
+  results: [],
+  history: {
+    accuracy: [72, 78, 75, 82, 88, 85, 91],
+    time: [620, 580, 560, 510, 490, 470, 445]
+  },
+  skills: {
+    'الذاكرة العاملة': { pct: 65, color: '#00d4ff' },
+    'التحكم التنفيذي': { pct: 45, color: '#7c3aed' },
+    'سرعة المعالجة': { pct: 55, color: '#10b981' },
+    'المرونة الإدراكية': { pct: 35, color: '#f59e0b' }
+  }
+};
+
+// ========================================================
+// NAVIGATION
+// ========================================================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  const pills = document.querySelectorAll('.nav-pill');
+  const map = { home: 0, train: 1, dashboard: 2 };
+  if (map[name] !== undefined) pills[map[name]].classList.add('active');
+  if (name === 'dashboard') renderDashboard();
+}
+
+// ========================================================
+// ADAPTIVE DIFFICULTY
+// ========================================================
+function adaptLevel(accuracy, avgTime, targetTime) {
+  if (accuracy >= 0.90 && avgTime <= targetTime) {
+    state.level = Math.min(state.level + 1, 10);
+  } else if (accuracy <= 0.70) {
+    state.level = Math.max(state.level - 1, 1);
+  }
+}
+
+function addPoints(correct, responseTime) {
+  if (correct) {
+    const bonus = Math.max(0, Math.floor((2000 - responseTime) / 100));
+    state.points += 10 + bonus;
+    state.streak++;
+  } else {
+    state.streak = 0;
+  }
+  document.getElementById('header-points').textContent = state.points;
+  document.getElementById('stat-streak').textContent = state.streak;
+}
+
+// ========================================================
+// EXERCISE ROUTER
+// ========================================================
+function startExercise(type) {
+  state.currentExercise = type;
+  state.results = [];
+  showScreen('exercise');
+  document.getElementById('stat-accuracy').textContent = '—';
+  document.getElementById('stat-time').textContent = '—';
+  document.getElementById('stat-streak').textContent = state.streak;
+
+  if (type === 'digit') startDigitSpan();
+  else if (type === 'stroop') startStroop();
+  else if (type === 'gonogo') startGoNoGo();
+}
+
+function showFeedback(correct) {
+  const el = document.getElementById('feedback-overlay');
+  el.className = 'feedback-overlay show ' + (correct ? 'correct' : 'wrong');
+  el.textContent = correct ? '✓' : '✗';
+  setTimeout(() => { el.className = 'feedback-overlay'; }, 600);
+}
+
+function updateStats() {
+  if (!state.results.length) return;
+  const done = state.results.filter(r => r.correct);
+  const acc = Math.round((done.length / state.results.length) * 100);
+  const avgT = Math.round(state.results.reduce((a, b) => a + (b.time || 0), 0) / state.results.length);
+  document.getElementById('stat-accuracy').textContent = acc + '%';
+  document.getElementById('stat-time').textContent = avgT || '—';
+}
+
+function renderDots(total, current) {
+  const c = document.getElementById('ex-dots');
+  c.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot ' + (i < current ? 'done' : i === current ? 'current' : '');
+    c.appendChild(d);
+  }
+}
+
+// ========================================================
+// EXERCISE 1: DIGIT SPAN
+// ========================================================
+function startDigitSpan() {
+  const totalTrials = 5;
+  const seqLen = state.level + 2;
+  let trial = 0;
+  let phase = 'intro';
+
+  document.getElementById('ex-level-badge').textContent = 'المستوى ' + state.level + ' · ' + seqLen + ' أرقام';
+  renderDots(totalTrials, 0);
+
+  function runTrial() {
+    if (trial >= totalTrials) { finishDigit(); return; }
+    renderDots(totalTrials, trial);
+    const seq = Array.from({ length: seqLen }, () => Math.floor(Math.random() * 9) + 1);
+    showDisplay(seq, 0);
+  }
+
+  function showDisplay(seq, idx) {
+    const area = document.getElementById('exercise-content');
+    if (idx < seq.length) {
+      area.innerHTML = `
+        <p class="phase-label">احفظ الأرقام</p>
+        <div class="digit-display" id="dd">${seq[idx]}</div>
+        <div class="timer-bar-wrap"><div class="timer-bar" id="tb" style="width:100%"></div></div>
+      `;
+      const tb = document.getElementById('tb');
+      const dur = Math.max(500, 1000 - state.level * 40);
+      tb.style.transition = `width ${dur}ms linear`;
+      setTimeout(() => { tb.style.width = '0%'; }, 50);
+      setTimeout(() => showDisplay(seq, idx + 1), dur);
+    } else {
+      showInput(seq);
+    }
+  }
+
+  function showInput(seq) {
+    const area = document.getElementById('exercise-content');
+    area.innerHTML = `
+      <p class="phase-label">أدخل الأرقام بالترتيب</p>
+      <input class="digit-input" id="di" type="text" inputmode="numeric" maxlength="${seqLen}" placeholder="${'_ '.repeat(seqLen).trim()}" autofocus>
+      <div style="margin-top:20px">
+        <button class="btn btn-primary" onclick="window._dsSubmit()">تأكيد ←</button>
+      </div>
+    `;
+    const t0 = Date.now();
+    document.getElementById('di').focus();
+    document.getElementById('di').addEventListener('keydown', e => {
+      if (e.key === 'Enter') window._dsSubmit();
+    });
+
+    window._dsSubmit = function() {
+      const val = document.getElementById('di').value.trim();
+      const correct = val === seq.join('');
+      const time = Date.now() - t0;
+      state.results.push({ correct, time });
+      addPoints(correct, time);
+      showFeedback(correct);
+      updateStats();
+      trial++;
+      setTimeout(runTrial, 700);
+    };
+  }
+
+  function finishDigit() {
+    const acc = state.results.filter(r => r.correct).length / state.results.length;
+    const avgT = state.results.reduce((a, b) => a + b.time, 0) / state.results.length;
+    adaptLevel(acc, avgT, 3000);
+    showComplete('الذاكرة العاملة', acc, Math.round(avgT));
+  }
+
+  document.getElementById('exercise-content').innerHTML = `
+    <p class="phase-label">Digit Span · الذاكرة العاملة</p>
+    <p class="instruction-text">ستظهر سلسلة من الأرقام واحداً تلو الآخر.<br>احفظها ثم أدخلها بنفس الترتيب.</p>
+    <button class="btn btn-primary btn-lg" onclick="(${runTrial.toString()})()">ابدأ التمرين</button>
+  `;
+  // immediate start binding
+  document.querySelector('#exercise-content .btn').onclick = runTrial;
+}
+
+// ========================================================
+// EXERCISE 2: STROOP
+// ========================================================
+function startStroop() {
+  const colors = [
+    { name: 'أحمر', hex: '#ef4444' },
+    { name: 'أزرق', hex: '#3b82f6' },
+    { name: 'أخضر', hex: '#10b981' },
+    { name: 'أصفر', hex: '#f59e0b' }
+  ];
+  const totalTrials = 10;
+  let trial = 0;
+
+  document.getElementById('ex-level-badge').textContent = 'Stroop · المستوى ' + state.level;
+  renderDots(totalTrials, 0);
+
+  function runTrial() {
+    if (trial >= totalTrials) { finishStroop(); return; }
+    renderDots(totalTrials, trial);
+
+    const inkColor = colors[Math.floor(Math.random() * colors.length)];
+    const incongruent = Math.random() < Math.min(0.8, 0.3 + state.level * 0.05);
+    let wordColor = inkColor;
+    if (incongruent) {
+      const others = colors.filter(c => c.name !== inkColor.name);
+      wordColor = others[Math.floor(Math.random() * others.length)];
+    }
+
+    const area = document.getElementById('exercise-content');
+    area.innerHTML = `
+      <p class="phase-label">اضغط على لون الحبر (ليس الكلمة)</p>
+      <div class="stroop-word" style="color:${inkColor.hex}">${wordColor.name}</div>
+      <div class="color-buttons">
+        ${colors.map(c => `<button class="color-btn" style="background:${c.hex}" onclick="window._stroopAnswer('${c.name}','${inkColor.name}')"></button>`).join('')}
+      </div>
+      <div class="timer-bar-wrap mt-16"><div class="timer-bar" id="stb" style="width:100%"></div></div>
+    `;
+    const timeLimit = Math.max(2000, 4000 - state.level * 200);
+    const tb = document.getElementById('stb');
+    tb.style.transition = `width ${timeLimit}ms linear`;
+    setTimeout(() => { tb.style.width = '0%'; }, 50);
+    const t0 = Date.now();
+
+    let answered = false;
+    const timeout = setTimeout(() => {
+      if (!answered) {
+        answered = true;
+        state.results.push({ correct: false, time: timeLimit });
+        addPoints(false, timeLimit);
+        showFeedback(false);
+        updateStats();
+        trial++;
+        setTimeout(runTrial, 600);
+      }
+    }, timeLimit);
+
+    window._stroopAnswer = function(chosen, correct) {
+      if (answered) return;
+      answered = true;
+      clearTimeout(timeout);
+      const ok = chosen === correct;
+      const time = Date.now() - t0;
+      state.results.push({ correct: ok, time });
+      addPoints(ok, time);
+      showFeedback(ok);
+      updateStats();
+      trial++;
+      setTimeout(runTrial, 600);
+    };
+  }
+
+  function finishStroop() {
+    const acc = state.results.filter(r => r.correct).length / state.results.length;
+    const avgT = state.results.reduce((a, b) => a + b.time, 0) / state.results.length;
+    adaptLevel(acc, avgT, 2000);
+    showComplete('التحكم التنفيذي', acc, Math.round(avgT));
+  }
+
+  document.getElementById('exercise-content').innerHTML = `
+    <p class="phase-label">Stroop · التحكم التنفيذي</p>
+    <p class="instruction-text">ستظهر كلمة لون بلون مختلف.<br>اضغط على <strong style="color:var(--accent)">لون الحبر</strong> — وليس ما تقرأه!</p>
+    <button class="btn btn-primary btn-lg" id="stroop-start">ابدأ التمرين</button>
+  `;
+  document.getElementById('stroop-start').onclick = runTrial;
+}
+
+// ========================================================
+// EXERCISE 3: GO / NO-GO
+// ========================================================
+function startGoNoGo() {
+  const totalTrials = 15;
+  let trial = 0;
+  const goSymbol = '🟢';
+  const noGoSymbol = '🔴';
+
+  document.getElementById('ex-level-badge').textContent = 'Go/No-Go · المستوى ' + state.level;
+  renderDots(totalTrials, 0);
+
+  function runTrial() {
+    if (trial >= totalTrials) { finishGoNoGo(); return; }
+    renderDots(totalTrials, trial);
+
+    const isGo = Math.random() > Math.min(0.4, 0.2 + state.level * 0.02);
+    const stimTime = Math.max(300, 800 - state.level * 50);
+
+    const area = document.getElementById('exercise-content');
+    area.innerHTML = `
+      <p class="phase-label">${isGo ? 'اضغط!' : 'لا تضغط!'} (${trial + 1}/${totalTrials})</p>
+      <div class="go-target waiting" id="gt">⬜</div>
+      <div class="timer-bar-wrap mt-16"><div class="timer-bar" id="gtb" style="width:100%"></div></div>
+    `;
+
+    setTimeout(() => {
+      const gt = document.getElementById('gt');
+      if (!gt) return;
+      gt.textContent = isGo ? goSymbol : noGoSymbol;
+      gt.className = 'go-target ' + (isGo ? 'go' : 'nogo');
+      const tb = document.getElementById('gtb');
+      tb.style.transition = `width ${stimTime}ms linear`;
+      setTimeout(() => { tb.style.width = '0%'; }, 50);
+
+      const t0 = Date.now();
+      let answered = false;
+
+      gt.onclick = function() {
+        if (answered) return;
+        answered = true;
+        const time = Date.now() - t0;
+        const correct = isGo;
+        state.results.push({ correct, time });
+        addPoints(correct, time);
+        showFeedback(correct);
+        updateStats();
+        trial++;
+        setTimeout(runTrial, 600);
+      };
+
+      setTimeout(() => {
+        if (!answered) {
+          answered = true;
+          const correct = !isGo;
+          state.results.push({ correct, time: stimTime });
+          addPoints(correct, stimTime);
+          if (!correct) showFeedback(false);
+          else showFeedback(true);
+          updateStats();
+          trial++;
+          setTimeout(runTrial, 600);
+        }
+      }, stimTime);
+    }, 400);
+  }
+
+  function finishGoNoGo() {
+    const acc = state.results.filter(r => r.correct).length / state.results.length;
+    const avgT = state.results.reduce((a, b) => a + b.time, 0) / state.results.length;
+    adaptLevel(acc, avgT, 500);
+    showComplete('الكبح والانتباه', acc, Math.round(avgT));
+  }
+
+  document.getElementById('exercise-content').innerHTML = `
+    <p class="phase-label">Go / No-Go · الكبح والانتباه</p>
+    <p class="instruction-text">
+      عندما يظهر 🟢 <strong style="color:var(--accent3)">اضغط بسرعة</strong><br>
+      عندما يظهر 🔴 <strong style="color:var(--danger)">لا تضغط</strong>
+    </p>
+    <button class="btn btn-primary btn-lg" id="gonogo-start">ابدأ التمرين</button>
+  `;
+  document.getElementById('gonogo-start').onclick = runTrial;
+}
+
+// ========================================================
+// COMPLETE SCREEN
+// ========================================================
+function showComplete(skillName, accuracy, avgTime) {
+  const acc = Math.round(accuracy * 100);
+  const area = document.getElementById('exercise-content');
+
+  // Save to history
+  state.history.accuracy.push(acc);
+  state.history.time.push(avgTime);
+  if (state.history.accuracy.length > 7) state.history.accuracy.shift();
+  if (state.history.time.length > 7) state.history.time.shift();
+
+  // Update skill
+  const skillMap = {
+    'الذاكرة العاملة': 'الذاكرة العاملة',
+    'التحكم التنفيذي': 'التحكم التنفيذي',
+    'الكبح والانتباه': 'التحكم التنفيذي',
+  };
+  const sk = skillMap[skillName] || skillName;
+  if (state.skills[sk]) {
+    state.skills[sk].pct = Math.min(100, Math.round((state.skills[sk].pct * 0.7 + acc * 0.3)));
+  }
+
+  const grade = acc >= 90 ? '🏆 ممتاز' : acc >= 75 ? '✅ جيد جداً' : acc >= 60 ? '📈 جيد' : '🔄 تحتاج تدريباً';
+  const nextLevel = acc >= 90 && avgTime < 2000 ? `المستوى ارتفع إلى ${state.level}! ⬆️` : acc <= 70 ? `المستوى انخفض إلى ${state.level} 🔄` : 'نفس المستوى ±';
+
+  area.innerHTML = `
+    <div class="anim-in">
+      <p style="font-size:14px;color:var(--text-dim);margin-bottom:8px">${skillName} · اكتمل</p>
+      <div class="score-display">${acc}%</div>
+      <p style="font-size:18px;font-weight:700;margin-bottom:24px">${grade}</p>
+      <div class="stats-row" style="justify-content:center;gap:20px;margin-bottom:24px">
+        <div style="text-align:center">
+          <div style="font-size:20px;font-family:'JetBrains Mono',monospace;color:var(--accent3)">${avgTime}ms</div>
+          <div style="font-size:11px;color:var(--text-dim)">متوسط الاستجابة</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:20px;font-family:'JetBrains Mono',monospace;color:var(--warning)">+${state.points}</div>
+          <div style="font-size:11px;color:var(--text-dim)">نقاط إجمالية</div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text-dim);margin-bottom:20px">${nextLevel}</p>
+      <div class="gap-12">
+        <button class="btn btn-primary" onclick="startExercise('${state.currentExercise}')">إعادة التمرين</button>
+        <button class="btn btn-secondary" onclick="showScreen('train')">تمرين آخر</button>
+        <button class="btn btn-secondary" onclick="showScreen('dashboard')">عرض الأداء</button>
+      </div>
+    </div>
+  `;
+}
+
+// ========================================================
+// DASHBOARD
+// ========================================================
+function renderDashboard() {
+  // Accuracy chart
+  const ac = document.getElementById('accuracy-chart');
+  ac.innerHTML = state.history.accuracy.map((v, i) => `
+    <div class="bar-col">
+      <div class="bar" style="height:${v}%"></div>
+      <div class="bar-lbl">${['1','2','3','4','5','6','7'][i]}</div>
+    </div>
+  `).join('');
+
+  // Time chart
+  const tc = document.getElementById('time-chart');
+  const maxT = Math.max(...state.history.time);
+  tc.innerHTML = state.history.time.map((v, i) => `
+    <div class="bar-col">
+      <div class="bar" style="height:${Math.round((1 - v / maxT) * 80 + 10)}%;background:linear-gradient(to top,#7c3aed,#a78bfa)"></div>
+      <div class="bar-lbl">${v}</div>
+    </div>
+  `).join('');
+
+  // Skill bars
+  const sb = document.getElementById('skill-bars');
+  sb.innerHTML = Object.entries(state.skills).map(([name, { pct, color }]) => `
+    <div class="skill-row">
+      <div class="skill-row-name">${name}</div>
+      <div class="skill-row-bar"><div class="skill-row-fill" style="width:${pct}%;background:${color}"></div></div>
+      <div class="skill-row-pct">${pct}%</div>
+    </div>
+  `).join('');
+
+  // Global stats
+  const gs = document.getElementById('global-stats');
+  gs.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;justify-content:space-between;font-size:14px">
+        <span style="color:var(--text-dim)">إجمالي النقاط</span>
+        <span style="color:var(--warning);font-weight:700">${state.points}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:14px">
+        <span style="color:var(--text-dim)">المستوى الحالي</span>
+        <span style="color:var(--accent);font-weight:700">${state.level}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:14px">
+        <span style="color:var(--text-dim)">أفضل متتالية</span>
+        <span style="color:var(--accent3);font-weight:700">${state.streak}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:14px">
+        <span style="color:var(--text-dim)">آخر دقة</span>
+        <span style="color:var(--text)">${state.history.accuracy[state.history.accuracy.length - 1]}%</span>
+      </div>
+    </div>
+  `;
+
+  // Recommendations
+  const rec = document.getElementById('recommendations');
+  const weakest = Object.entries(state.skills).sort((a, b) => a[1].pct - b[1].pct)[0];
+  const strongest = Object.entries(state.skills).sort((a, b) => b[1].pct - a[1].pct)[0];
+  rec.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:12px;font-size:13px">
+      <div style="padding:12px;background:rgba(239,68,68,0.08);border-radius:8px;border-right:3px solid var(--danger)">
+        <strong style="color:var(--danger)">تحتاج تحسين:</strong><br>
+        <span style="color:var(--text-dim)">${weakest[0]} (${weakest[1].pct}%) — ركز عليها في جلستك القادمة</span>
+      </div>
+      <div style="padding:12px;background:rgba(16,185,129,0.08);border-radius:8px;border-right:3px solid var(--accent3)">
+        <strong style="color:var(--accent3)">نقطة قوة:</strong><br>
+        <span style="color:var(--text-dim)">${strongest[0]} (${strongest[1].pct}%) — واصل التحدي</span>
+      </div>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
